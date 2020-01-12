@@ -20,15 +20,16 @@ class ChecklistState extends State<Checklist> {
 
   Map<String, bool> checkBoxValue = {};
 
-  @override
+ @override
   void initState() {
-    // TODO: implement initState
-    setupList();
+
+    super.initState();
+     setupList();
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+
     return Scaffold(
       body: _buildExpensesList(expensesContainer),
       floatingActionButton: FloatingActionButton(

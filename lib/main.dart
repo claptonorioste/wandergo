@@ -29,7 +29,7 @@ class _MyApp extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(primaryColor: Colors.black),
+      theme: ThemeData(primaryColor: Color(0xff086375)),
       debugShowCheckedModeBanner: false,
       home: isLoggedIn ? Homepage()  : SiginInPage(),
       routes: <String, WidgetBuilder>{

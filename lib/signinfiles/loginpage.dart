@@ -54,7 +54,7 @@ class _SiginInPageState extends State<SiginInPage>
   bool disableLoginButton = true; // disable button if no input
   bool disableRegButton = true; // same as previous
   ProgressDialog pr; // loading animation
-  String logMsg = "Loading please wait . . . .";
+  String logMsg = "Please wait . . .";
 
   @override
   void initState() {
@@ -81,6 +81,7 @@ class _SiginInPageState extends State<SiginInPage>
       regIsEmpty(regName, regUsername, regPassword, regCpassword);
     });
     KeyboardVisibilityNotification().addNewListener(onChange: (bool visible) {
+      print(visible);
       // view if keyboard is on
       setState(() {
         _keyboardOn = visible;
@@ -112,7 +113,7 @@ class _SiginInPageState extends State<SiginInPage>
           fontWeight: FontWeight.w600),
     );
 
-    return Scaffold(resizeToAvoidBottomPadding: false, body: signfields());
+    return Scaffold( body: signfields());
   }
 
   Widget signfields() {
@@ -120,6 +121,7 @@ class _SiginInPageState extends State<SiginInPage>
       decoration: BoxDecoration(
           image: DecorationImage(
               image: AssetImage("assets/images/6.jpg"), fit: BoxFit.cover)),
+      child:ListView(children: <Widget>[Container(
       child: Column(
         children: <Widget>[
           Container(
@@ -131,7 +133,7 @@ class _SiginInPageState extends State<SiginInPage>
                   child: Center(
                     child: Image.asset(
                       'assets/Untitled-1.png',
-                      height: MediaQuery.of(context).size.width * 0.50,
+                      height: MediaQuery.of(context).size.height * 0.50,
                       width: MediaQuery.of(context).size.width * 0.30,
                     ),
                   ),
@@ -140,7 +142,7 @@ class _SiginInPageState extends State<SiginInPage>
                   child: Center(
                     child: Image.asset(
                       'assets/Untitled-1.png',
-                      height: MediaQuery.of(context).size.width * 0.60,
+                      height: MediaQuery.of(context).size.height * 0.20,
                       width: MediaQuery.of(context).size.width * 0.60,
                     ),
                   ),
@@ -173,7 +175,7 @@ class _SiginInPageState extends State<SiginInPage>
           Container(
             padding: EdgeInsets.all(5),
             width: MediaQuery.of(context).size.width * 0.90,
-            height: MediaQuery.of(context).size.width * 1,
+            height:400,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
                 color: Colors.white),
@@ -204,7 +206,7 @@ class _SiginInPageState extends State<SiginInPage>
                                 "input_pass",
                                 inputPasswordKey),
                             Container(
-                              height: 50,
+                              height: MediaQuery.of(context).size.height * 0.06,
                               width: MediaQuery.of(context).size.width * 0.75,
                               child: FlatButton(
                                 shape: RoundedRectangleBorder(
@@ -269,8 +271,10 @@ class _SiginInPageState extends State<SiginInPage>
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 Container(
-                                  height: 70,
-                                  width: 100,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.09,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.3,
                                   child: FlatButton(
                                       child: Icon(
                                         FontAwesomeIcons.facebookF,
@@ -291,8 +295,10 @@ class _SiginInPageState extends State<SiginInPage>
                                     margin:
                                         EdgeInsets.only(left: 15, right: 15)),
                                 Container(
-                                  height: 70,
-                                  width: 100,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.09,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.3,
                                   child: FlatButton(
                                       child: Icon(
                                         FontAwesomeIcons.google,
@@ -350,14 +356,14 @@ class _SiginInPageState extends State<SiginInPage>
                           "reg_email",
                           regUsernameKey),
                       PasswordInputField(
-                          Icon(FontAwesomeIcons.lock, color: Color(0xff086375)),
+                          Icon(Icons.lock, color: Color(0xff086375)),
                           'Password',
                           true,
                           regPassword,
                           "reg_pass",
                           regPasswordKey),
                       Container(
-                        height: 50,
+                        height: MediaQuery.of(context).size.height * 0.06,
                         width: MediaQuery.of(context).size.width * 0.75,
                         child: FlatButton(
                           shape: RoundedRectangleBorder(
@@ -407,7 +413,7 @@ class _SiginInPageState extends State<SiginInPage>
           )
         ],
       ),
-    );
+    )],));
   }
 
   Future insertData(
@@ -458,9 +464,11 @@ class _SiginInPageState extends State<SiginInPage>
           pr.hide();
           try {
             List data = json.decode(response.body);
-             prefs.setString('userID', data[0]["id"]);
-             
-             Navigator.pushReplacementNamed(context, "/home");
+            prefs.setString('userID', data[0]["id"]);
+            prefs.setString(
+                'fullname', data[0]["name"] + " " + data[0]["lastname"]);
+
+            Navigator.pushReplacementNamed(context, "/home");
             print(data);
           } catch (e) {
             Future.delayed(Duration(seconds: 3)).then((value) {
@@ -520,8 +528,8 @@ class _SiginInPageState extends State<SiginInPage>
 
   void initiateFacebookLogin() async {
     var facebookLogin = FacebookLogin();
-    var facebookLoginResult =
-        await facebookLogin.logInWithReadPermissions(['email']);
+
+    var facebookLoginResult = await facebookLogin.logIn(['email']);
 
     switch (facebookLoginResult.status) {
       case FacebookLoginStatus.error:
@@ -542,7 +550,7 @@ class _SiginInPageState extends State<SiginInPage>
             'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=${facebookLoginResult.accessToken.token}');
         var profile = json.decode(graphResponse.body);
         soValidate(
-            profile["email"], "", profile["first_name"], profile["last_name"]);
+            profile["email"].toString(), "", profile["first_name"].toString(), profile["last_name"].toString());
         print(profile);
         break;
     }
@@ -619,7 +627,9 @@ class _SiginInPageState extends State<SiginInPage>
           try {
             List data = json.decode(response.body);
             prefs.setString('userID', data[0]["id"]);
-             Navigator.pushReplacementNamed(context, "/home");
+            prefs.setString(
+                'fullname', data[0]["name"] + " " + data[0]["lastname"]);
+            Navigator.pushReplacementNamed(context, "/home");
             print(data);
           } catch (e) {
             Future.delayed(Duration(seconds: 3)).then((value) {
@@ -629,7 +639,6 @@ class _SiginInPageState extends State<SiginInPage>
               });
             });
           }
-        
         }
       });
     } catch (e) {

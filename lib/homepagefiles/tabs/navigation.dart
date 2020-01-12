@@ -15,13 +15,11 @@ class NavigationState extends State<Navigation> {
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
 
   Position _currentPosition;
-  String _currentAddress;
   double lat = 0.0;
   double long = 0.0;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
   
@@ -90,27 +88,12 @@ class NavigationState extends State<Navigation> {
       _mapCtl.move(LatLng(lat,long),15.0);
     
 
-      _getAddressFromLatLng();
+      
     }).catchError((e) {
       print(e);
     });
   }
 
-   _getAddressFromLatLng() async {
-    try {
-      List<Placemark> p = await geolocator.placemarkFromCoordinates(
-          _currentPosition.latitude, _currentPosition.longitude);
-
-      Placemark place = p[0];
-
-      setState(() {
-        _currentAddress =
-            "${place.locality}, ${place.postalCode}, ${place.country}";
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
-  
+   
   
 }

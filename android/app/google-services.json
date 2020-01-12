@@ -44,6 +44,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "255188662920-6e6k666nbml2sg6h2ip079ptrvq8euei.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.wandergo",
+            "certificate_hash": "4187b233131aaed0a81231236bb2825a6aaa5c4f"
+          }
+        },
+        {
           "client_id": "255188662920-1q6hs6gd0mq9k1h3isladbp38ch6akr2.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

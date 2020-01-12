@@ -1,4 +1,4 @@
-import 'dart:convert';
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -11,6 +11,8 @@ import 'package:wandergo/datafiles/expensemodelonline.dart';
 import 'package:wandergo/datafiles/expensesmodel.dart';
 import 'package:wandergo/datafiles/offlinedatabase.dart';
 import 'package:wandergo/datafiles/onlinedb.dart';
+
+import 'package:wandergo/datafiles/plannermodel.dart';
 import 'package:wandergo/datafiles/someList.dart';
 import 'package:toast/toast.dart';
 import 'package:wandergo/homepagefiles/tabs/statistcstab.dart';
@@ -25,7 +27,7 @@ class HomeTab extends StatefulWidget {
 }
 
 class HomeTabState extends State<HomeTab>
-    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+    with SingleTickerProviderStateMixin{
   final db = ExpenseDatabase();
   String thisuserId = "";
   int totalAmount = 0;
@@ -33,7 +35,6 @@ class HomeTabState extends State<HomeTab>
   int tap = 0;
   int lastId = 0;
   bool emptyList = false;
-  
 
   Map onlineDB = {};
 
@@ -71,15 +72,14 @@ class HomeTabState extends State<HomeTab>
 
   void initState() {
     super.initState();
-    
+
     getUserId();
     onStartup();
-
   }
 
-  bool checkContainer(){
-    for(int x = 0 ; x<expensesContainer.length; x++){
-      if(expensesContainer[x].date == ""){
+  bool checkContainer() {
+    for (int x = 0; x < expensesContainer.length; x++) {
+      if (expensesContainer[x].date == "") {
         return false;
       }
     }
@@ -259,7 +259,7 @@ class HomeTabState extends State<HomeTab>
                       style: TextStyle(color: Color(0xff086375)),
                     ),
                     onPressed: () {
-                       _setBudget(context);
+                      _setBudget(context);
                     },
                   ),
                 ))
@@ -283,8 +283,8 @@ class HomeTabState extends State<HomeTab>
               decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(50),
-                      topRight: Radius.circular(50))),
+                      topLeft: Radius.circular(25),
+                      topRight: Radius.circular(25))),
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -744,7 +744,6 @@ class HomeTabState extends State<HomeTab>
                         Border(bottom: BorderSide(color: Colors.grey[100]))),
                 child: ListTile(
                   onTap: () {
-                  
                     if (lastId == model.id) {
                       lastId = 0;
                       tap = 2;
@@ -864,8 +863,6 @@ class HomeTabState extends State<HomeTab>
     setState(() {
       expensesContainer = _allExpense.reversed.toList();
       amountContainer = _allAmount;
-
-      
 
       try {
         budget = amountContainer[0].amount.toString();
@@ -1186,9 +1183,21 @@ class HomeTabState extends State<HomeTab>
   void onStartupSync() async {
     var _fetchonlinedb = await getOnlineExpenseDb(thisuserId);
     var _fetchonlineamountdb = await getOnlineAmountDb(thisuserId);
-      
+    var _fetchonlineplanner = await getOnlineplaner(thisuserId);
+    print(_fetchonlineplanner);
+
+    for (int x = 0; x < _fetchonlineplanner.length; x++) {
+      db.addPlan(PlannerModel(
+          id: _fetchonlineplanner[x].userplannerid,
+          date: _fetchonlineplanner[x].date,
+          listLabel: _fetchonlineplanner[x].label,
+          isDone: _fetchonlineplanner[x].isDone,
+          isDeleted: _fetchonlineplanner[x].isDelete));
+    }
+    
     for (int x = 0; x < _fetchonlineamountdb.length; x++) {
-     db.setAmount(AmountModel(id: 1, amount: (_fetchonlineamountdb[x].amount).toDouble()));
+      db.setAmount(AmountModel(
+          id: 1, amount: (_fetchonlineamountdb[x].amount).toDouble()));
     }
     for (int x = 0; x < _fetchonlinedb.length; x++) {
       db.addExpense(ExpensesModel(
@@ -1198,17 +1207,15 @@ class HomeTabState extends State<HomeTab>
           icon: _fetchonlinedb[x].icon,
           date: _fetchonlinedb[x].date,
           isDeleted: _fetchonlinedb[x].isDeleted));
-          setupList();
+      setupList();
     }
   }
 
   void checkInternet() async {
     try {
       final result = await InternetAddress.lookup('google.com');
-      
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        
 
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         var _fetchonlinedb = await getOnlineExpenseDb(thisuserId);
         var _fetchonlineamount = await getOnlineAmountDb(thisuserId);
 
@@ -1216,16 +1223,14 @@ class HomeTabState extends State<HomeTab>
         expenseonlinedbcontainer = _fetchonlinedb;
 
         //IM HERE
-        for(int x = 0; x < amountContainer.length; x++){
-          if(checkAmountExist()){
-            syncAmount(thisuserId,amountContainer[0].amount.toString());
-            
-          }else{
-            syncUpdateAmount(thisuserId,amountContainer[0].amount.toString());
-           
+        for (int x = 0; x < amountContainer.length; x++) {
+          if (checkAmountExist()) {
+            syncAmount(thisuserId, amountContainer[0].amount.toString());
+          } else {
+            syncUpdateAmount(thisuserId, amountContainer[0].amount.toString());
           }
         }
-        
+
         for (int x = 0; x < expensesContainer.length; x++) {
           if (checkExist(expensesContainer[x].id)) {
             if (expensesContainer[x].isDeleted == 1) {
@@ -1242,14 +1247,9 @@ class HomeTabState extends State<HomeTab>
                 expensesContainer[x].date.toString(),
                 expensesContainer[x].isDeleted.toString());
           }
-       
         }
-     
       }
-    } on SocketException catch (_) {
-     
-    }
-    
+    } on SocketException catch (_) {}
   }
 
   bool checkExist(int expenseId) {
@@ -1262,26 +1262,21 @@ class HomeTabState extends State<HomeTab>
   }
 
   bool checkAmountExist() {
-     
-      if (amountonlinedbcontainer.length == 1) {
-        
-        return false;
-      }
-    
+    if (amountonlinedbcontainer.length == 1) {
+      return false;
+    }
+
     return true;
   }
 
-   void onStartup() async {
+  void onStartup() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String start = prefs.getString('start');
     if (start != null) {
       setupList();
-    }else{
-        onStartupSync();
-        prefs.setString('start',"done");
+    } else {
+      onStartupSync();
+      prefs.setString('start', "done");
     }
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

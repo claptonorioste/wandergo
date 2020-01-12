@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:sqflite/sqflite.dart';
 import 'package:wandergo/datafiles/expensesmodel.dart';
+import 'package:wandergo/datafiles/plannermodel.dart';
 
 import 'amountModel.dart';
 
@@ -59,6 +60,16 @@ class ExpenseDatabase {
         )
     ''');
 
+      db.execute('''
+      CREATE TABLE tblplanner(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        listLabel TEXT,
+        date TEXT,
+        isDone INTEGER,
+        isDeleted INTEGER
+        )
+    ''');
+
   
     print("Database was created!");
   }
@@ -73,6 +84,12 @@ class ExpenseDatabase {
 
     var client = await db;
     return client.insert('tblexpense', expense.toMapForDb(), conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+   Future<int> addPlan(PlannerModel plan) async {
+
+    var client = await db;
+    return client.insert('tblplanner', plan.toMapForDb(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   
@@ -121,6 +138,15 @@ class ExpenseDatabase {
     }
     return [];
   }
+Future<List<PlannerModel>> fetchPlan() async {
+    var client = await db;
+    var res = await client.query('tblplanner');
+    if (res.isNotEmpty) {
+      var thisexpense = res.map((expenseMap) => PlannerModel.fromDb(expenseMap)).toList();
+      return thisexpense;
+    }
+    return [];
+  }
 
 
    
@@ -160,6 +186,7 @@ class ExpenseDatabase {
     var client = await db;
     return client.delete('tblamount', where: 'id = ?', whereArgs: [id]);
   }
+  
 
 
 
@@ -172,6 +199,11 @@ class ExpenseDatabase {
   Future<void> removeAllAmount() async {
     var client = await db;
     return client.delete('tblamount');
+  }
+
+  Future<void> removePlan() async {
+    var client = await db;
+    return client.delete('tblplanner');
   }
 
  

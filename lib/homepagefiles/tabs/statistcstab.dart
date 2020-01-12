@@ -4,7 +4,6 @@ import 'package:pie_chart/pie_chart.dart';
 import 'package:wandergo/datafiles/expensesmodel.dart';
 import 'package:wandergo/datafiles/offlinedatabase.dart';
 import 'package:wandergo/datafiles/someList.dart';
-import 'package:wandergo/datafiles/someList.dart' as prefix0;
 
 
 class Statistics extends StatefulWidget {

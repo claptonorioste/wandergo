@@ -29,6 +29,7 @@ class _PasswordInputField extends State<PasswordInputField> {
     return Column(children: <Widget>[
       Container(
         width: MediaQuery.of(context).size.width * 0.754,
+        height: MediaQuery.of(context).size.height * 0.06,
         child: Material(
           borderRadius: BorderRadius.circular(8.0),
           color: Colors.white,
@@ -39,27 +40,21 @@ class _PasswordInputField extends State<PasswordInputField> {
                     : Border.all(color: Color(0xff086375)),
                 borderRadius: BorderRadius.all(Radius.circular(9.0))),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: showTooltip ?  Icon(Icons.email, color: Colors.red) : widget.fieldicon,
+                 Container(
+                   padding: EdgeInsets.only(left: 13),
+                  color: Colors.white,
+                  child: showTooltip
+                      ? Icon(Icons.email, color: Colors.red)
+                      : widget.fieldicon,
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(8.0),
-                      bottomRight: Radius.circular(8.0),
-                    ),
-                  ),
-                  width: 254,
-                  height: 50,
+                Expanded(
                   child: Column(
-                    children: <Widget>[
-                      Form(
-                        key: widget._formKey,
-                        child: TextFormField(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[Form(
+                      key: widget._formKey,
+                      child: TextFormField(
                           onChanged: (value) {
                             if (widget.txtfieldName == "invalid_email" ||
                                 widget.txtfieldName == "reg_email") {
@@ -78,11 +73,9 @@ class _PasswordInputField extends State<PasswordInputField> {
                             if (widget.txtfieldName == "reg_email") {
                               if (EmailValidator.validate(value)) {
                                 validataUserName(widget.myController.text);
-                             
                               } else {
                                 setState(() {
                                   showTooltip = true;
-                                   
                                 });
                               }
                             } else if (widget.txtfieldName == "input_user") {
@@ -92,62 +85,57 @@ class _PasswordInputField extends State<PasswordInputField> {
                                 });
                               }
                             }
-                            
                           },
                           controller: widget.myController,
                           obscureText: widget.isHidden,
                           decoration: InputDecoration(
-                            suffixIcon: widget.txtfieldName == "input_pass" || widget.txtfieldName == "reg_pass"
-                                ? IconButton(
-                                    icon:  widget.isHidden ? Icon(Icons.visibility_off) : Icon(Icons.visibility),
-                                    onPressed: () {
-                                      setState(() {
-                                         widget.isHidden =  !widget.isHidden;
-                                      });
-
-                                    },
-                                  )
-                                : widget.txtfieldName == "reg_pass"
-                                    ? Icon(Icons.visibility)
-                                    : widget.txtfieldName == "reg_email"
-                                        ? showTooltip
-                                            ? Icon(
-                                                FontAwesomeIcons
-                                                    .exclamationCircle,
-                                                color:
-                                                    Colors.red.withOpacity(0.7),
-                                              )
-                                            : null
-                                        : widget.txtfieldName == "input_user"
-                                            ? showTooltip
-                                                ? IconButton(
-                                                    onPressed: () {
-                                                      print("hello");
-                                                    },
-                                                    icon: Icon(
-                                                      FontAwesomeIcons
-                                                          .exclamationCircle,
-                                                      color: Colors.red
-                                                          .withOpacity(0.7),
-                                                    ),
-                                                  )
-                                                : null
-                                            : null,
                             border: InputBorder.none,
                             hintText: widget.hinttext,
                             hintStyle: TextStyle(color: Colors.grey),
-                            fillColor: Colors.transparent,
+                            fillColor: Colors.white,
                             filled: true,
                           ),
                           style: TextStyle(
-                            fontSize: 20.0,
                             color: Color(0xff086375),
                           ),
-                        ),
-                      ),
+                        ),),
+                     
                     ],
                   ),
                 ),
+                 Container(
+                   padding: EdgeInsets.all(10),
+                    child: widget.txtfieldName == "input_pass" ||
+                            widget.txtfieldName == "reg_pass"
+                        ? GestureDetector(
+                            child: widget.isHidden
+                                ? Icon(Icons.visibility_off)
+                                : Icon(Icons.visibility),
+                            onTap: () {
+                              setState(() {
+                                widget.isHidden = !widget.isHidden;
+                              });
+                            },
+                          )
+                        : widget.txtfieldName == "reg_pass"
+                            ? Icon(Icons.visibility)
+                            : widget.txtfieldName == "reg_email"
+                                ? showTooltip
+                                    ? Icon(
+                                        FontAwesomeIcons.exclamationCircle,
+                                        color: Colors.red.withOpacity(0.7),
+                                      )
+                                    : Container()
+                                : widget.txtfieldName == "input_user"
+                                    ? showTooltip
+                                        ? Icon(
+                                            FontAwesomeIcons.exclamationCircle,
+                                            color: Colors.red.withOpacity(0.7),
+                                          )
+                                        : Container()
+                                    : Container(),
+                  ),
+                
               ],
             ),
           ),
@@ -155,15 +143,19 @@ class _PasswordInputField extends State<PasswordInputField> {
       ),
       showTooltip
           ? Container(
-              child: Text(errMsg,style: TextStyle(color: Colors.red),),
-              padding: EdgeInsets.all(3),
+              child: Text(
+                errMsg,
+                style: TextStyle(color: Colors.red),
+              ),
+              padding: EdgeInsets.all(0),
             )
           : Container(
               child: Text(""),
-              padding: EdgeInsets.all(3),
+              padding: EdgeInsets.all(0),
             )
     ]);
   }
+
   Future validataUserName(
     String user,
   ) async {
@@ -182,6 +174,4 @@ class _PasswordInputField extends State<PasswordInputField> {
       });
     } catch (e) {}
   }
-
-  
 }
